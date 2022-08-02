@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserController extends Controller
 {
@@ -14,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+    //
     }
 
     /**
@@ -25,7 +27,40 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response('
+            { 
+             "message": "Validation failed",
+
+            }', 400)
+                ->header('Content-Type', 'text/json');
+        }
+
+        $name = $request->name;
+        $email = $request->email;
+        $password = $request->password;
+
+        $user = new User();
+        $user->name = $name;
+        $user->email = $email;
+        $user->password = $password;
+        $user->save();
+
+        return response('
+        {
+        "message": "User account created successfully",
+        "user":'. $user .'
+        }
+        ', 200)
+            ->header('Content-Type', 'text/json');
     }
 
     /**
@@ -36,7 +71,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+    //
     }
 
     /**
@@ -48,7 +83,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+    //
     }
 
     /**
@@ -59,6 +94,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+    //
     }
 }
